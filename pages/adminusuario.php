@@ -23,37 +23,26 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['search_name'])) {
 }
 
 if (isset($_POST['edit_user'])) {
-    if (isset($_POST['user_id'], $_POST['nombres'], $_POST['apellidos'], $_POST['email'], $_POST['telefono'], $_POST['tipo_usuario_id'], $_POST['descuento'])) {
+    if (isset($_POST['user_id'], $_POST['nombres'], $_POST['apellidos'], $_POST['email'], $_POST['telefono'], $_POST['descuento'])) {
         $user_id = $_POST['user_id'];
         $nombres = mysqli_real_escape_string($conn, $_POST['nombres']);
         $apellidos = mysqli_real_escape_string($conn, $_POST['apellidos']);
         $email = mysqli_real_escape_string($conn, $_POST['email']);
         $telefono = mysqli_real_escape_string($conn, $_POST['telefono']);
-        $tipo_usuario_id = (int)$_POST['tipo_usuario_id'];
         $descuento = (float)$_POST['descuento'];  // Sanitize the descuento input
 
-        // Verificar si el tipo de usuario existe en la tabla 'tipousuario'
-        $check_tipo_usuario = "SELECT * FROM tipousuario WHERE IdTipoUsuario = '$tipo_usuario_id'";
-        $result_check = mysqli_query($conn, $check_tipo_usuario);
-        
-        if (mysqli_num_rows($result_check) > 0) {
-            // Si el tipo de usuario existe, proceder con la actualización
-            $sql = "UPDATE usuario SET Nombres='$nombres', Apellidos='$apellidos', Email='$email', Telefono='$telefono', TipoUsuarioId='$tipo_usuario_id', Descuento='$descuento' WHERE IdUsuario='$user_id'";
+        // Actualizar usuario
+        $sql = "UPDATE usuario SET Nombres='$nombres', Apellidos='$apellidos', Email='$email', Telefono='$telefono', Descuento='$descuento' WHERE IdUsuario='$user_id'";
 
-            if (mysqli_query($conn, $sql)) {
-                echo "<p>Usuario actualizado exitosamente.</p>";
-            } else {
-                echo "<p>Error al actualizar el usuario: " . mysqli_error($conn) . "</p>";
-            }
+        if (mysqli_query($conn, $sql)) {
+            echo "<p>Usuario actualizado exitosamente.</p>";
         } else {
-            echo "<p>Error: el tipo de usuario seleccionado no existe.</p>";
+            echo "<p>Error al actualizar el usuario: " . mysqli_error($conn) . "</p>";
         }
     } else {
         echo "<p>Error: faltan datos necesarios para editar el usuario.</p>";
     }
 }
-
-
 
 // Si se ha enviado el formulario de eliminar
 if (isset($_POST['delete_user'])) {
@@ -68,8 +57,8 @@ if (isset($_POST['delete_user'])) {
     }
 }
 
-// Consulta para obtener todos los usuarios de tipo "Cliente" (TipoUsuarioId = 2)
-$sql = "SELECT * FROM usuario WHERE TipoUsuarioId = 2";
+// Consulta para obtener todos los usuarios
+$sql = "SELECT * FROM usuario";
 $result = mysqli_query($conn, $sql);
 ?>
 
@@ -95,45 +84,36 @@ $result = mysqli_query($conn, $sql);
         <?php if (isset($user)): ?>
             <h2>Editar usuario</h2>
             <form method="POST">
-    <input type="hidden" name="user_id"  value="<?php echo $user['IdUsuario']; ?>">
+                <input type="hidden" name="user_id" value="<?php echo $user['IdUsuario']; ?>">
 
-    <label>Nombre:</label><br>
-    <input type="text" name="nombres" required maxlength="10" value="<?php echo $user['Nombres']; ?>" required><br><br>
+                <label>Nombre:</label><br>
+                <input type="text" name="nombres" required maxlength="20" value="<?php echo $user['Nombres']; ?>" required><br><br>
 
-    <label>Apellido:</label><br>
-    <input type="text" name="apellidos" required maxlength="10" value="<?php echo $user['Apellidos']; ?>" required><br><br>
+                <label>Apellido:</label><br>
+                <input type="text" name="apellidos" required maxlength="20" value="<?php echo $user['Apellidos']; ?>" required><br><br>
 
-    <label>Email:</label><br>
-    <input type="email" name="email"  value="<?php echo $user['Email']; ?>" required><br><br>
+                <label>Email:</label><br>
+                <input type="email" name="email" value="<?php echo $user['Email']; ?>" required><br><br>
 
-    <label>Teléfono:</label><br>
-    <input type="text" name="telefono" required maxlength="10" value="<?php echo $user['Telefono']; ?>" required><br><br>
+                <label>Teléfono:</label><br>
+                <input type="text" name="telefono" required maxlength="8" value="<?php echo $user['Telefono']; ?>" required><br><br>
 
-    <label>Tipo de usuario:</label><br>
-    <select name="tipo_usuario_id" required>
-        <option value="1" <?php echo ($user['TipoUsuarioId'] == 1) ? 'selected' : ''; ?>>Administrador</option>
-        <option value="2" <?php echo ($user['TipoUsuarioId'] == 2) ? 'selected' : ''; ?>>Cliente</option>
-    </select><br><br>
+                <!-- Nuevo campo para descuento -->
+                <label>Descuento:</label><br>
+                <input type="number" name="descuento" value="<?php echo $user['Descuento']; ?>" step="0.01" min="0" max="100" required><br><br>
 
-    <!-- Nuevo campo para descuento -->
-    <label>Descuento:</label><br>
-    <input type="number" name="descuento" value="<?php echo $user['Descuento']; ?>" step="0.01" min="0" max="100" required><br><br>
-
-    <button type="submit" name="edit_user">Actualizar</button>
-</form>
-
-
+                <button type="submit" name="edit_user">Actualizar</button>
+            </form>
 
             <form method="POST">
                 <input type="hidden" name="user_id" value="<?php echo $user['IdUsuario']; ?>">
                 <button type="submit" name="delete_user">Eliminar usuario</button>
             </form>
-
         <?php endif; ?>
     </div>
 
     <div class="container usuarios">
-        <h2>Lista de clientes</h2>
+        <h2>Lista de usuarios</h2>
         <table>
             <thead>
                 <tr>
@@ -156,7 +136,6 @@ $result = mysqli_query($conn, $sql);
                         <td>
                             <form method="POST" action="">
                                 <input type="hidden" name="user_id" value="<?php echo $cliente['IdUsuario']; ?>">
-                                
                                 <button type="submit" name="delete_user">Eliminar</button>
                             </form>
                         </td>

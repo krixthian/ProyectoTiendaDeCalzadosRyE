@@ -1,9 +1,9 @@
 <?php
-include_once '../app.php'; // Asegúrate de que la función isAdmin() esté incluida
-include '../includes/db.php'; // Asegúrate de que la conexión a la base de datos esté configurada aquí
+include_once '../app.php'; 
+include '../includes/db.php'; 
 
-// Consulta para obtener todos los zapatos
-$sql = "SELECT * FROM zapato"; // Selecciona todos los zapatos
+
+$sql = "SELECT * FROM zapato"; 
 $result = mysqli_query($conn, $sql);
 ?>
 
@@ -30,7 +30,6 @@ $result = mysqli_query($conn, $sql);
             margin-bottom: 20px;
         }
 
-        /* Estilo para la cuadrícula de zapatos (zapatos distribuidos en filas) */
         .shoe-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); /* Ajuste automático de columnas */
@@ -86,18 +85,37 @@ $result = mysqli_query($conn, $sql);
             while ($row = mysqli_fetch_assoc($result)) {
                 ?>
                 <div class="shoe-card">
-                    <div class="shoe-info">
-                        <h3 class="shoe-name"><?php echo $row['Nombre']; ?></h3>
-                        <p><strong>Talla:</strong> <?php echo $row['Talla']; ?></p>
-                        <p><strong>Descripción:</strong> <?php echo $row['Descripcion']; ?></p>
-                        <p><strong>Precio:</strong> $<?php echo number_format($row['Precio'], 2); ?></p>
-                        <p><strong>Descuento:</strong> <?php echo $row['Descuento']; ?>%</p>
-                        <p><strong>Stock:</strong> <?php echo $row['Stock']; ?></p>
-                    </div>
-                    <div class="shoe-image">
-                        <img src="../uploads/<?php echo $row['FotoZapato']; ?>" alt="Imagen del zapato" class="shoe-photo">
-                    </div>
-                </div>
+    <div class="shoe-info">
+        <h3 class="shoe-name"><?php echo $row['Nombre']; ?></h3>
+        <p><strong>Talla:</strong> <?php echo $row['Talla']; ?></p>
+        <p><strong>Descripción:</strong> <?php echo $row['Descripcion']; ?></p>
+        <p><strong>Precio:</strong> Bs.<?php echo number_format($row['Precio'], 2); ?></p>
+        <p><strong>Descuento:</strong> <?php echo $row['Descuento']; ?>%</p>
+        <p><strong>Stock:</strong> <?php echo $row['Stock']; ?></p>
+    </div>
+    <div class="shoe-image">
+        <img src="../uploads/<?php echo $row['FotoZapato']; ?>" alt="Imagen del zapato" class="shoe-photo">
+    </div>
+    <!-- Botón para WhatsApp -->
+    <div class="shoe-whatsapp">
+        <?php
+        // Mensaje personalizado para WhatsApp
+        $message = urlencode("¡Hola! Estoy interesado en el zapato " . $row['Nombre'] . 
+                             " (Talla: " . $row['Talla'] . 
+                             ", Precio: Bs" . number_format($row['Precio'], 2) . 
+                             ", Descuento: " . $row['Descuento'] . "%).");
+        // Número de WhatsApp al que se enviará el mensaje
+        $whatsapp_number = "591XXXXXXXX"; // Cambia esto por el número de tu tienda
+        ?>
+        <a href="https://wa.me/<?php echo $whatsapp_number; ?>?text=<?php echo $message; ?>" 
+           target="_blank" 
+           class="whatsapp-button" 
+           style="display: inline-block; margin-top: 10px; padding: 10px 15px; background-color: #25D366; color: white; text-decoration: none; border-radius: 5px;">
+            Consultar en WhatsApp
+        </a>
+    </div>
+</div>
+
                 <?php
             }
             echo '</div>';  // Cierra la cuadrícula de zapatos

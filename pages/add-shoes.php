@@ -57,7 +57,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <h2>Agregar Nuevo Zapato</h2>
         <form method="POST" enctype="multipart/form-data">
             <label>Nombre del Zapato:</label><br>
-            <input type="text" required maxlength="10" name="shoe_name" required><br><br>
+            <input type="text" required maxlength="100" name="shoe_name" required><br><br>
 
             <label>Talla:</label><br>
             <input type="text" required maxlength="10" name="shoe_size" maxlength="5" required><br><br>
